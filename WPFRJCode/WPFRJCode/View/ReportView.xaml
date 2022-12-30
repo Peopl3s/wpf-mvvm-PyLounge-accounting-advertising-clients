@@ -1,0 +1,60 @@
+﻿<UserControl x:Class="WPFRJCode.View.ReportView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WPFRJCode.View"
+             xmlns:models="clr-namespace:WPFRJCode.Model"
+             xmlns:viewModel="clr-namespace:WPFRJCode.ViewModel"
+             xmlns:viewmodels="clr-namespace:WPFRJCode.ViewModel"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:core="clr-namespace:Charts.WPF.Core;assembly=Charts.WPF"
+             xmlns:chartControls="clr-namespace:Charts.WPF.ChartControls;assembly=Charts.WPF"
+             xmlns:columnChart="clr-namespace:Charts.WPF.Core.ColumnChart;assembly=Charts.WPF"
+             xmlns:pieChart="clr-namespace:Charts.WPF.Core.PieChart;assembly=Charts.WPF"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    
+    <UserControl.DataContext>
+        <viewModel:ReportViewModel/>
+    </UserControl.DataContext>
+
+    <UserControl.Resources>
+        <Style x:Key="ChartStyle" TargetType="core:ChartBase">
+            <Setter Property="Margin" Value="0 0 10 10"/>
+            <Setter Property="Background" Value="#99FFFFFF"/>
+            <Setter Property="Foreground" Value="#FF666666"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Width" Value="400"/>
+            <Setter Property="Height" Value="400"/>
+        </Style>
+    </UserControl.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        
+        <pieChart:PieChart Grid.Column="0" Style="{StaticResource ChartStyle}"
+                            ChartTitle="Выручка" ChartSubTitle="Компания/заработок"
+                            SelectedItem="{Binding Path=SelectedItem, Mode=TwoWay}" >
+            <pieChart:PieChart.Series>
+                <chartControls:ChartSeries SeriesTitle="Errors" 
+                                           DisplayMember="Organization" ValueMember="Cost"
+                                           ItemsSource="{Binding Path=AllTransactions, UpdateSourceTrigger=PropertyChanged}">
+                </chartControls:ChartSeries>
+            </pieChart:PieChart.Series>
+        </pieChart:PieChart>
+
+        <columnChart:ClusteredColumnChart Grid.Column="1" Style="{StaticResource ChartStyle}"
+                                ChartTitle="Выручка" ChartSubTitle="Дата/заработок"                  
+                                SelectedItem="{Binding Path=SelectedItem, Mode=TwoWay}">
+            <columnChart:ClusteredColumnChart.Series>
+                <chartControls:ChartSeries SeriesTitle="Дата" DisplayMember="Date" ValueMember="Cost"
+                                        ItemsSource="{Binding Path=AllTransactions, UpdateSourceTrigger=PropertyChanged}"/>
+            </columnChart:ClusteredColumnChart.Series>
+        </columnChart:ClusteredColumnChart>
+    </Grid>
+</UserControl>

@@ -1,0 +1,158 @@
+﻿<UserControl x:Class="WPFRJCode.View.CustomerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:viewModel="clr-namespace:WPFRJCode.ViewModel"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WPFRJCode.View"
+             xmlns:models="clr-namespace:WPFRJCode.Model"
+             xmlns:viewmodels="clr-namespace:WPFRJCode.ViewModel"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.DataContext>
+        <viewModel:CustomerViewModel/>
+    </UserControl.DataContext>
+
+    <UserControl.Resources>
+        <DataTemplate x:Key="CustomerTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="{Binding ID}"/>
+                <Label Content="{Binding FirstName}"/>
+                <Label Content="{Binding LastName}"/>
+                <Label Content="{Binding Phone}"/>
+                <Label Content="{Binding Email}"/>
+                <Label Content="{Binding Address}"/>
+                <Label Content="{Binding Telegram}"/>
+                <Label Content="{Binding Organization.Name}"/>
+            </StackPanel>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Grid.Column="0">
+
+                <fa:IconImage Icon="Search" Height="20" Width="20" Foreground="{StaticResource plainTextColor3}"/>
+                <TextBox x:Name="SearchTextBox" Text="Search..." FontSize="13" 
+                         Height="24" Width="300" Background="Transparent"
+                         FontWeight="Medium" FontFamily="Montserrat"                            
+                         Foreground="{StaticResource plainTextColor3}"
+                         CaretBrush="{StaticResource plainTextColor3}"
+                         BorderBrush="{StaticResource plainTextColor3}"
+                         BorderThickness="0,0,0,1" VerticalContentAlignment="Center" Margin="5,5,0,0"/>
+
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" 
+                        Margin="172,0,0,0" Width="228" Grid.Column="1">
+                
+                <Button x:Name="SearchButton" Content="Search" FontSize="12" Width="60"
+                        FontFamily="Montserrat" Cursor="Hand" BorderThickness="0" 
+                        Foreground="{StaticResource primaryTextColor1}" HorizontalAlignment="Left"
+                        Margin="0,0,5,0" VerticalAlignment="Top" Style="{StaticResource SearchButtonStyle}"
+                        Command="{Binding SearchCustomerCommand}"
+                        CommandParameter="{Binding ElementName=SearchTextBox, Path=Text}"/>
+
+                <Button x:Name="RefreshButton" Command="{Binding RefreshCustomerCommand}"
+                        Content="Refresh" FontSize="12" Width="60"
+                        FontFamily="Montserrat"
+                        Cursor="Hand"
+                        BorderThickness="0" Foreground="{StaticResource primaryTextColor1}"
+                        VerticalAlignment="Top" Style="{StaticResource SearchButtonStyle}"/>
+
+                <Button x:Name="AddButton" Content="+" Width="50" Height="30"
+                        Command="{Binding AddCustomerCommand}" 
+                        FontSize="16" 
+                        Style="{StaticResource ControlButtonStyle}"
+                        Template="{StaticResource ControlButtonTemplate}"
+                        Margin="5,0,0,0"/>
+
+                <Button x:Name="DelButton" Content="-" Width="50" Height="30" FontSize="16" 
+                        Command="{Binding RemoveCustomerCommand}"
+                        CommandParameter="{Binding ElementName=customersGrid, Path=SelectedItem}"
+                        Style="{StaticResource ControlButtonStyle}"
+                        Template="{StaticResource ControlButtonTemplate}"
+                        RenderTransformOrigin="-0.46,0.717"/>
+
+            </StackPanel>
+
+        </Grid>
+
+        <Border x:Name="customersGridBorder" Grid.Row="1" 
+                Background="{StaticResource customerBorderBackgroundColor}" 
+                CornerRadius="10" Padding="10">
+            
+            <DataGrid x:Name="customersGrid" ColumnWidth="*" Background="{StaticResource customerBorderBackgroundColor}" 
+                      BorderThickness="0"
+                      AutoGenerateColumns="False"  
+                      ItemsSource="{Binding AllCustomers, Mode=TwoWay,  UpdateSourceTrigger=PropertyChanged}"
+                      HorizontalAlignment="Stretch" 
+                      HorizontalContentAlignment="Stretch"
+                      CanUserAddRows="False"
+                      ItemTemplate="{StaticResource CustomerTemplate}"
+                      RowBackground="{StaticResource primaryButtonColor2}" 
+                      AlternatingRowBackground="{StaticResource primaryButtonColor1}"
+                      Foreground="{StaticResource primaryTextColor1}">
+                
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="CellEditEnding">
+                        <i:InvokeCommandAction Command="{Binding EditCustomerCommand}" 
+                                               CommandParameter="{Binding ElementName=customersGrid, Path=SelectedItem}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Foreground" Value="{StaticResource customerTextColor}"/>
+                        <Setter Property="Padding" Value="10,0,0,10"/>
+                        <Setter Property="FontFamily" Value="Montserrat"/>
+                        <Setter Property="FontSize" Value="15"/>
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
+                
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding ID,UpdateSourceTrigger=PropertyChanged}" 
+                                        ClipboardContentBinding="{x:Null}" Header="ID" IsReadOnly="True" HeaderStringFormat=""/>
+                    
+                    <DataGridTextColumn Binding="{Binding FirstName,UpdateSourceTrigger=PropertyChanged}" 
+                                        ClipboardContentBinding="{x:Null}" Header="First name"/>
+                    
+                    <DataGridTextColumn Binding="{Binding LastName,UpdateSourceTrigger=PropertyChanged}" 
+                                        ClipboardContentBinding="{x:Null}" Header="Last name"/>
+                    
+                    <DataGridTextColumn Binding="{Binding Phone,UpdateSourceTrigger=PropertyChanged}" 
+                                        ClipboardContentBinding="{x:Null}" Header="Phone"/>
+                    
+                    <DataGridTextColumn Binding="{Binding Email,UpdateSourceTrigger=PropertyChanged}" 
+                                        ClipboardContentBinding="{x:Null}" Header="Email"/>
+                    
+                    <DataGridTextColumn Binding="{Binding Address,UpdateSourceTrigger=PropertyChanged}" 
+                                        ClipboardContentBinding="{x:Null}" Header="Address"/>
+                    
+                    <DataGridTextColumn Binding="{Binding Telegram,UpdateSourceTrigger=PropertyChanged}" 
+                                        ClipboardContentBinding="{x:Null}" Header="Telegram"/>
+                    
+                    <DataGridTextColumn Binding="{Binding Organization.Name,UpdateSourceTrigger=PropertyChanged }" 
+                                        ClipboardContentBinding="{x:Null}" Header="Organization"/>
+                </DataGrid.Columns>
+                
+            </DataGrid>
+            
+        </Border>
+        
+    </Grid>
+</UserControl>
